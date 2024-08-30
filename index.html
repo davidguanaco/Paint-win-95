@@ -76,13 +76,62 @@
         const $$ = selector=> document.querySelectorAll(selector)
         //ELEMENTS
         const $canvas = $("#canvas")
-
+        const $colorPicker = $("#color-picker")
         const ctx = $canvas.getContext("2d")
         //STATE
-        let idDrawing = false
+        let isDrawing = false
+        let startX, startY
         let lastX =0
         let lastY =0
-        let mode = 'Draw'
+        let mode = MODES.DRAW
+
+        //EVENTS
+        $canvas.addEventListener("mousedown",startDrawing)
+        $canvas.addEventListener("mousemove",draw)
+        $canvas.addEventListener("mouseup",stopDrawing)
+        $canvas.addEventListener("mouseleave",stopDrawing)
+
+        $colorPicker.addEventListener("change",handleChangeColor)
+
+        //METHODS
+        function startDrawing(event) {
+            isDrawing = true;
+            
+            const {offsetX, offsetY} =event
+            ;[startX, startY] = [offsetX, offsetY]
+            ;[lastX, lastY] = [offsetX, offsetY]
+
+           
+
+        }
+        
+        function draw(event) {
+            if(!isDrawing) return;
+
+            const {offsetX, offsetY} = event
+
+            //comienza el trazado
+            ctx.beginPath();
+            //mover el trazado a las coordenadas actuales
+            ctx.moveTo(lastX,lastY);
+            //dibujar linea entre coordenadas y las nuevas coordenadas
+            ctx.lineTo(offsetX, offsetY);
+
+            ctx.stroke();
+            
+            //actualizamos ultimas coordenadas
+            [lastX,lastY] = [offsetX, offsetY];
+
+        }
+        
+        function stopDrawing(event) {
+            isDrawing = false;
+        }
+        
+        function handleChangeColor(){
+            const {value} = $colorPicker
+            ctx.strokeStyle = value;
+        }
     </script>
 
 </head>
